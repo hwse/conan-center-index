@@ -43,7 +43,7 @@ class LibavrocppConan(ConanFile):
 
     def layout(self):
         cmake_layout(self, src_folder="src")
-        
+
     def requirements(self):
         # boost upper to 1.81.0 requires C++14 minimum
         self.requires("boost/1.81.0", transitive_headers=True)
@@ -102,5 +102,8 @@ class LibavrocppConan(ConanFile):
             self.cpp_info.system_libs.append("m")
         self.cpp_info.requires = [
             "boost::headers", "boost::filesystem", "boost::iostreams", "boost::program_options",
-            "boost::regex", "boost::system", "snappy::snappy",
+            "boost::regex", "snappy::snappy",
         ]
+        # boost 1.89.0 removed the component boost::system, so we only add it for earlier versions
+        if self.dependencies["boost"].ref.version < "1.89.0":
+            self.cpp_info.requires.append("boost::system")
